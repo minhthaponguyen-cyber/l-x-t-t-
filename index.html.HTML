@@ -1,0 +1,801 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no">
+<title>Lì xì Tết ❤️</title>
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;height:100%;overflow:hidden;font-family:system-ui}
+body{
+  background:radial-gradient(circle at top,#ff5c8a,#7a0000 55%,#120000 85%);
+}
+
+/* ===== LOCK ===== */
+.lock{
+  position:fixed;inset:0;
+  background:rgba(0,0,0,.75);
+  display:flex;align-items:center;justify-content:center;
+  z-index:99;
+}
+.lock-box{
+  background:linear-gradient(135deg,#b80000,#ff2e63);
+  padding:26px 30px;
+  border-radius:22px;
+  box-shadow:0 0 40px gold;
+  text-align:center;
+}
+.lock-box h2{color:gold;margin-bottom:12px}
+.lock-box input{
+  width:150px;padding:10px;
+  font-size:20px;text-align:center;
+  border:none;border-radius:12px;
+}
+.lock-box button{
+  margin-top:12px;
+  padding:8px 24px;
+  border:none;border-radius:30px;
+  background:linear-gradient(135deg,#ffe066,#ffb703);
+  font-weight:700;
+}
+
+/* ===== BAO LÌ XÌ ===== */
+.envelope{
+  position:absolute;left:50%;top:60%;
+  width:220px;height:160px;
+  transform:translate(-50%,-50%);
+  background:linear-gradient(135deg,#b80000,#ff2e63);
+  border-radius:22px;
+  box-shadow:0 0 60px gold;
+  z-index:5;
+}
+.envelope::before{
+  content:"福";
+  position:absolute;inset:0;
+  display:flex;align-items:center;justify-content:center;
+  font-size:64px;color:gold;
+}
+.lid{
+  position:absolute;inset:0;
+  background:#ff4d6d;
+  clip-path:polygon(0 0,100% 0,50% 55%);
+  transform-origin:top;
+  transition:.8s;
+}
+.envelope.open{opacity:0;transform:translate(-50%,-45%) scale(.85)}
+.envelope.open .lid{transform:rotateX(180deg)}
+
+/* ===== SCENE ===== */
+.scene{
+  position:absolute;left:50%;top:55%;
+  width:100vw;height:70vh;
+  transform:translate(-50%,-50%);
+}
+
+/* ===== TEXT ===== */
+.text-layer{
+  position:absolute;inset:0;
+  text-align:center;
+  pointer-events:none;
+  z-index:20;
+}
+.wish{
+  position:absolute;top:42%;left:50%;
+  transform:translate(-50%,-50%);
+  font-size:22px;font-weight:700;
+  color:#ffd966;
+  text-shadow:0 0 30px gold;
+  opacity:0;transition:1s;
+}
+.wish.show{opacity:1}
+.final-text{
+  position:absolute;top:50%;left:50%;
+  transform:translate(-50%,-50%);
+  font-size:34px;font-weight:900;
+  color:#ffd1dc;
+  text-shadow:0 0 60px #ff5c8a;
+  opacity:0;
+}
+.final-text.show{
+  opacity:1;
+  animation:pulse 1.4s infinite;
+}
+@keyframes pulse{50%{transform:translate(-50%,-50%) scale(1.2)}}
+
+/* ===== FISH ===== */
+.fish{position:absolute;width:22px;height:12px}
+.body{position:absolute;width:16px;height:8px;border-radius:10px;left:6px;top:2px}
+.eye{position:absolute;width:3px;height:3px;background:#000;border-radius:50%;right:3px;top:4px}
+.tail{
+  position:absolute;left:0;top:4px;
+  border-top:4px solid transparent;
+  border-bottom:4px solid transparent;
+  border-right:6px solid #38bdf8;
+}
+.pink .body{background:#ff5c8a}
+.gold .body{background:gold}
+
+/* ===== PHOTO HEART ===== */
+.photo-layer{position:absolute;inset:0;z-index:18}
+.photo{
+  position:absolute;
+  width:76px;height:76px;
+  border-radius:18px;
+  object-fit:cover;
+  opacity:0;
+  transform:scale(0);
+  box-shadow:0 0 30px gold,0 0 80px hotpink;
+  transition:1.2s cubic-bezier(.2,.9,.3,1.3);
+}
+.photo.show{
+  opacity:1;
+  transform:scale(1);
+  animation:beat 1.6s infinite;
+}
+@keyframes beat{50%{transform:scale(1.08)}}
+.photo.zoom{
+  position:fixed;
+  left:50%!important;top:50%!important;
+  width:80vw;height:80vw;
+  max-width:360px;max-height:360px;
+  transform:translate(-50%,-50%) scale(1.1)!important;
+  z-index:99;
+}
+.photo-msg{
+  position:fixed;
+  bottom:18%;left:50%;
+  transform:translateX(-50%);
+  color:#fff;font-size:20px;
+  text-shadow:0 0 30px hotpink;
+  opacity:0;transition:1s;
+  z-index:100;
+}
+.photo-msg.show{opacity:1}
+
+/* ===== REPLAY ===== */
+.replay{
+  position:fixed;bottom:24px;left:50%;
+  transform:translateX(-50%);
+  padding:10px 26px;
+  border:none;border-radius:30px;
+  background:linear-gradient(135deg,#ffe066,#ffb703);
+  font-weight:700;
+  display:none;
+  z-index:50;
+}
+</style>
+</head>
+
+<body>
+
+<div class="lock" id="lock">
+  <div class="lock-box">
+    <h2>💌 Nhập mật khẩu</h2>
+    <input id="pass" type="password">
+    <br><button onclick="unlock()">Mở lì xì</button>
+  </div>
+</div>
+
+<audio id="music" loop>
+  <source src="https://cdn.pixabay.com/audio/2023/12/20/audio_6f0e3c0f4a.mp3">
+</audio>
+
+<div class="envelope" id="env"><div class="lid"></div></div>
+<div class="scene" id="scene"></div>
+
+<div class="photo-layer" id="photoLayer">
+  <img src="img1.jpg" class="photo" data-msg="Gặp em là điều may mắn nhất ❤️">
+  <img src="img2.jpg" class="photo" data-msg="Tết nào anh cũng muốn có em ❤️">
+  <img src="img3.jpg" class="photo" data-msg="Em là lý do anh cười mỗi ngày 😊">
+  <img src="img4.jpg" class="photo" data-msg="Thương em không cần lý do 💕">
+  <img src="img5.jpg" class="photo" data-msg="Năm mới mình vẫn bên nhau nha 💞">
+  <img src="img6.jpg" class="photo" data-msg="Năm mới em luôn may mắn nha cđáng 💖">
+</div>
+
+<div class="text-layer">
+  <div class="wish" id="wish">Chúc em năm mới luôn vui vẻ 💕</div>
+  <div class="final-text" id="finalText">ANH YÊU EM RẤT NHIỀU ❤️</div>
+</div>
+
+<div class="photo-msg" id="msg"></div>
+<button class="replay" id="replay" onclick="resetAll()">🔁 Xem lại</button>
+
+<script>
+let unlocked=false,state=0,fishes=[],angle=0;
+const photos=[...document.querySelectorAll(".photo")];
+const msg=document.getElementById("msg");
+
+function unlock(){
+  if(pass.value==="2510"){
+    lock.style.display="none";
+    unlocked=true;
+  }
+}
+
+function createFishes(){
+  for(let i=0;i<60;i++){
+    const f=document.createElement("div");
+    f.className="fish pink";
+    f.innerHTML='<div class="tail"></div><div class="body"></div><div class="eye"></div>';
+    scene.appendChild(f);
+    fishes.push(f);
+  }
+}
+
+function animate(){
+  if(state>=1){
+    const cx=innerWidth/2,cy=scene.clientHeight/2;
+    fishes.forEach((f,i)=>{
+      const t=i/fishes.length*6.28+angle;
+      const x=16*Math.sin(t)**3;
+      const y=13*Math.cos(t)-5*Math.cos(2*t)-2*Math.cos(3*t)-Math.cos(4*t);
+      f.style.transform=`translate(${cx+x*12}px,${cy-y*12}px)`;
+    });
+    photos.forEach((p,i)=>{
+      const t=i/photos.length*6.28+angle;
+      const x=16*Math.sin(t)**3;
+      const y=13*Math.cos(t)-5*Math.cos(2*t)-2*Math.cos(3*t)-Math.cos(4*t);
+      p.style.left=cx+x*10-38+"px";
+      p.style.top =cy-y*10-38+"px";
+    });
+    angle+=0.006;
+  }
+  requestAnimationFrame(animate);
+}
+animate();
+
+addEventListener("click",()=>{
+  if(!unlocked) return;
+  if(state===0){
+    env.classList.add("open");
+    music.play().catch(()=>{});
+    createFishes();
+    wish.classList.add("show");
+    state=1;
+  }else if(state===1){
+    wish.classList.remove("show");
+    finalText.classList.add("show");
+    photos.forEach(p=>p.classList.add("show"));
+    state=2;
+    replay.style.display="block";
+  }
+});
+
+photos.forEach(p=>{
+  p.onclick=e=>{
+    e.stopPropagation();
+    p.classList.toggle("zoom");
+    msg.textContent=p.dataset.msg;
+    msg.classList.toggle("show");
+  }
+});
+
+function resetAll(){
+  fishes.forEach(f=>f.remove());
+  fishes=[];
+  photos.forEach(p=>p.className="photo");
+  finalText.classList.remove("show");
+  replay.style.display="none";
+  env.classList.remove("open");
+  state=0;
+}
+</script>
+
+</body>
+</html>
+<!-- ================= LEVEL MAX ADDON ================= -->
+
+<style>
+/* ===== FLOWER FALL ===== */
+.flower{
+  position:fixed;
+  top:-40px;
+  font-size:20px;
+  animation:fall linear infinite;
+  pointer-events:none;
+  z-index:1;
+}
+@keyframes fall{
+  to{transform:translateY(120vh) rotate(360deg)}
+}
+
+/* ===== LIGHT TRAIL TOUCH ===== */
+.trail{
+  position:fixed;
+  width:10px;height:10px;
+  border-radius:50%;
+  background:radial-gradient(circle,#fff,#ffb3c1,transparent);
+  pointer-events:none;
+  animation:trailFade .9s forwards;
+  z-index:2;
+}
+@keyframes trailFade{
+  to{transform:scale(0);opacity:0}
+}
+
+/* ===== HEART FLY ===== */
+.fly-heart{
+  position:fixed;
+  font-size:18px;
+  color:#ff5c8a;
+  animation:heartFly 2.6s ease-out forwards;
+  pointer-events:none;
+  z-index:4;
+}
+@keyframes heartFly{
+  to{
+    transform:translateY(-140px) scale(1.8);
+    opacity:0;
+  }
+}
+
+/* ===== BACKGROUND GLOW ===== */
+@keyframes bgShift{
+  50%{filter:hue-rotate(14deg) brightness(1.1)}
+}
+body{
+  animation:bgShift 14s ease-in-out infinite;
+}
+
+/* ===== TEXT SHAKE ===== */
+.final-text.show{
+  animation:
+    pulse 1.4s infinite,
+    shake .25s infinite alternate;
+}
+@keyframes shake{
+  from{transform:translate(-50%,-50%) rotate(-1deg)}
+  to{transform:translate(-50%,-50%) rotate(1deg)}
+}
+
+/* ===== OVERLAY ZOOM ===== */
+.zoom-overlay{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.65);
+  backdrop-filter:blur(6px);
+  z-index:98;
+  display:none;
+}
+.zoom-overlay.show{display:block}
+</style>
+
+<div class="zoom-overlay" id="zoomBg"></div>
+
+<script>
+/* ===== FLOWER CREATE ===== */
+function spawnFlower(){
+  const f=document.createElement("div");
+  f.className="flower";
+  f.textContent=Math.random()>.5?"🌸":"🌼";
+  f.style.left=Math.random()*100+"vw";
+  f.style.animationDuration=6+Math.random()*6+"s";
+  document.body.appendChild(f);
+  setTimeout(()=>f.remove(),12000);
+}
+setInterval(spawnFlower,600);
+
+/* ===== TOUCH TRAIL ===== */
+addEventListener("touchmove",e=>{
+  const t=document.createElement("div");
+  t.className="trail";
+  t.style.left=e.touches[0].clientX+"px";
+  t.style.top=e.touches[0].clientY+"px";
+  document.body.appendChild(t);
+  setTimeout(()=>t.remove(),900);
+});
+
+/* ===== CLICK HEART ===== */
+addEventListener("click",e=>{
+  if(!unlocked) return;
+  const h=document.createElement("div");
+  h.className="fly-heart";
+  h.textContent="❤️";
+  h.style.left=e.clientX+"px";
+  h.style.top=e.clientY+"px";
+  document.body.appendChild(h);
+  setTimeout(()=>h.remove(),2600);
+});
+
+/* ===== ZOOM OVERLAY CONTROL ===== */
+const zoomBg=document.getElementById("zoomBg");
+photos.forEach(p=>{
+  p.addEventListener("click",()=>{
+    zoomBg.classList.toggle("show");
+  });
+});
+zoomBg.onclick=()=>{
+  zoomBg.classList.remove("show");
+  photos.forEach(p=>p.classList.remove("zoom"));
+  msg.classList.remove("show");
+};
+</script>
+
+<!-- ================= END LEVEL MAX ================= -->
+<!-- ================= LEVEL MAX ++ ADDON ================= -->
+
+<style>
+/* ===== METEOR ===== */
+.meteor{
+  position:fixed;
+  width:120px;
+  height:2px;
+  background:linear-gradient(90deg,white,transparent);
+  opacity:.8;
+  transform:rotate(-45deg);
+  animation:meteor 1.2s linear forwards;
+  z-index:1;
+}
+@keyframes meteor{
+  to{
+    transform:translate(-600px,600px) rotate(-45deg);
+    opacity:0;
+  }
+}
+
+/* ===== SHOCKWAVE ===== */
+.shockwave{
+  position:fixed;
+  left:50%;top:50%;
+  width:20px;height:20px;
+  border-radius:50%;
+  border:3px solid rgba(255,215,0,.8);
+  transform:translate(-50%,-50%);
+  animation:shock 1.2s ease-out forwards;
+  z-index:6;
+}
+@keyframes shock{
+  to{
+    width:140vmax;
+    height:140vmax;
+    opacity:0;
+  }
+}
+
+/* ===== AURA PHOTO ===== */
+.photo::before{
+  content:"";
+  position:absolute;
+  inset:-14px;
+  border-radius:26px;
+  border:2px dashed rgba(255,182,193,.8);
+  animation:spin 6s linear infinite;
+}
+@keyframes spin{
+  to{transform:rotate(360deg)}
+}
+
+/* ===== PARTICLE TEXT ===== */
+.particle{
+  position:fixed;
+  width:4px;height:4px;
+  background:#ffd966;
+  border-radius:50%;
+  pointer-events:none;
+  z-index:7;
+  animation:particleFade 2s linear forwards;
+}
+@keyframes particleFade{
+  to{opacity:0;transform:translateY(-80px)}
+}
+
+/* ===== RAINBOW FLASH ===== */
+.flash{
+  position:fixed;
+  inset:0;
+  background:radial-gradient(circle,#fff,#ff5c8a,transparent);
+  opacity:0;
+  animation:flash .4s ease-out forwards;
+  z-index:120;
+}
+@keyframes flash{
+  50%{opacity:.6}
+  100%{opacity:0}
+}
+
+/* ===== SLOW MOTION ===== */
+.slow{
+  animation-play-state:paused!important;
+}
+</style>
+
+<script>
+/* ===== METEOR SPAWN ===== */
+function spawnMeteor(){
+  const m=document.createElement("div");
+  m.className="meteor";
+  m.style.left=Math.random()*100+"vw";
+  m.style.top=Math.random()*50+"vh";
+  document.body.appendChild(m);
+  setTimeout(()=>m.remove(),1200);
+}
+setInterval(spawnMeteor,4200);
+
+/* ===== SHOCKWAVE EFFECT ===== */
+function shock(){
+  const s=document.createElement("div");
+  s.className="shockwave";
+  document.body.appendChild(s);
+  navigator.vibrate?.([30,40,30]);
+  setTimeout(()=>s.remove(),1200);
+}
+
+/* ===== FLASH ===== */
+function flash(){
+  const f=document.createElement("div");
+  f.className="flash";
+  document.body.appendChild(f);
+  setTimeout(()=>f.remove(),400);
+}
+
+/* ===== PARTICLE TEXT LOVE ===== */
+function particleText(){
+  const text="LOVE";
+  for(let i=0;i<160;i++){
+    const p=document.createElement("div");
+    p.className="particle";
+    p.style.left=innerWidth/2+(Math.random()*120-60)+"px";
+    p.style.top=innerHeight/2+(Math.random()*60-30)+"px";
+    document.body.appendChild(p);
+    setTimeout(()=>p.remove(),2000);
+  }
+}
+
+/* ===== AUDIO BASS PULSE (FAKE) ===== */
+setInterval(()=>{
+  if(!music.paused){
+    finalText.style.textShadow=
+      "0 0 "+(40+Math.random()*40)+"px #ff5c8a";
+  }
+},300);
+
+/* ===== ENVELOPE EVENT BOOST ===== */
+const oldClick = window.onclick;
+addEventListener("click",()=>{
+  if(state===1){
+    shock();
+    flash();
+    particleText();
+  }
+});
+
+/* ===== PHOTO SLOW MOTION ===== */
+photos.forEach(p=>{
+  p.addEventListener("touchstart",()=>{
+    document.body.classList.add("slow");
+    setTimeout(()=>document.body.classList.remove("slow"),600);
+  });
+});
+
+/* ===== RANDOM SCREEN GLOW ===== */
+setInterval(()=>{
+  if(state>=2 && Math.random()>.6){
+    flash();
+  }
+},5000);
+</script>
+
+<!-- ================= END LEVEL MAX ++ ================= -->
+<!-- ================= OVERKILL MODE ADDON ================= -->
+
+<style>
+/* ===== GALAXY ===== */
+.galaxy{
+  position:fixed;
+  inset:-50%;
+  background:
+    radial-gradient(circle at 30% 30%,rgba(255,255,255,.15),transparent 40%),
+    radial-gradient(circle at 70% 60%,rgba(255,182,193,.18),transparent 45%),
+    radial-gradient(circle at 50% 50%,rgba(255,215,0,.1),transparent 50%);
+  animation:galaxySpin 80s linear infinite;
+  z-index:0;
+  pointer-events:none;
+}
+@keyframes galaxySpin{
+  to{transform:rotate(360deg)}
+}
+
+/* ===== GLITTER ===== */
+.glitter{
+  position:fixed;
+  width:4px;height:4px;
+  background:gold;
+  box-shadow:0 0 6px gold;
+  animation:glitterFall 3s linear forwards;
+  pointer-events:none;
+  z-index:3;
+}
+@keyframes glitterFall{
+  to{transform:translateY(120vh);opacity:0}
+}
+
+/* ===== FLAME ===== */
+.flame{
+  position:absolute;
+  width:14px;height:20px;
+  background:radial-gradient(circle,#fff,#ff7a18,#ff2e63);
+  border-radius:50%;
+  animation:flameUp 1.4s ease-out forwards;
+  pointer-events:none;
+  z-index:120;
+}
+@keyframes flameUp{
+  to{
+    transform:translateY(-80px) scale(0);
+    opacity:0;
+  }
+}
+
+/* ===== LIGHT WAVE ===== */
+.wave{
+  position:fixed;
+  left:50%;top:50%;
+  width:10px;height:10px;
+  border-radius:50%;
+  border:2px solid rgba(255,255,255,.6);
+  transform:translate(-50%,-50%);
+  animation:wave 1.6s ease-out forwards;
+  z-index:10;
+}
+@keyframes wave{
+  to{
+    width:120vmax;
+    height:120vmax;
+    opacity:0;
+  }
+}
+
+/* ===== GLITCH ===== */
+@keyframes glitch{
+  0%{filter:hue-rotate(0)}
+  20%{filter:hue-rotate(90deg)}
+  40%{filter:invert(1)}
+  60%{filter:contrast(2)}
+  80%{filter:hue-rotate(200deg)}
+}
+.glitch{
+  animation:glitch .25s linear;
+}
+
+/* ===== SPECTRUM ===== */
+.spectrum{
+  position:fixed;
+  inset:0;
+  background:linear-gradient(
+    45deg,
+    rgba(255,0,0,.12),
+    rgba(255,255,0,.12),
+    rgba(0,255,0,.12),
+    rgba(0,255,255,.12),
+    rgba(0,0,255,.12),
+    rgba(255,0,255,.12)
+  );
+  mix-blend-mode:screen;
+  opacity:0;
+  animation:spectrum 3s ease-out forwards;
+  z-index:200;
+  pointer-events:none;
+}
+@keyframes spectrum{
+  30%{opacity:.6}
+  100%{opacity:0}
+}
+
+/* ===== TIME FREEZE ===== */
+.freeze *{
+  animation-play-state:paused!important;
+}
+</style>
+
+<div class="galaxy"></div>
+
+<script>
+/* ===== GLITTER RAIN ===== */
+function glitter(){
+  const g=document.createElement("div");
+  g.className="glitter";
+  g.style.left=Math.random()*100+"vw";
+  g.style.top="-10px";
+  document.body.appendChild(g);
+  setTimeout(()=>g.remove(),3000);
+}
+setInterval(glitter,200);
+
+/* ===== FLAME ON PHOTO ===== */
+photos.forEach(p=>{
+  p.addEventListener("mousemove",e=>{
+    const f=document.createElement("div");
+    f.className="flame";
+    f.style.left=e.clientX+"px";
+    f.style.top=e.clientY+"px";
+    document.body.appendChild(f);
+    setTimeout(()=>f.remove(),1400);
+  });
+});
+
+/* ===== LIGHT WAVE ON FINAL ===== */
+finalText.addEventListener("click",()=>{
+  const w=document.createElement("div");
+  w.className="wave";
+  document.body.appendChild(w);
+  navigator.vibrate?.([60,30,60]);
+  setTimeout(()=>w.remove(),1600);
+});
+
+/* ===== RANDOM GLITCH ===== */
+setInterval(()=>{
+  if(state>=2 && Math.random()>.85){
+    document.body.classList.add("glitch");
+    setTimeout(()=>document.body.classList.remove("glitch"),300);
+  }
+},4000);
+
+/* ===== SPECTRUM BLAST ===== */
+function spectrum(){
+  const s=document.createElement("div");
+  s.className="spectrum";
+  document.body.appendChild(s);
+  setTimeout(()=>s.remove(),3000);
+}
+
+/* ===== EASTER EGG PASSWORD ===== */
+pass.addEventListener("change",()=>{
+  if(pass.value==="25102510"){
+    spectrum();
+    alert("💖 Anh thương em nhiều lắm 💖");
+  }
+});
+
+/* ===== PHOTO MAGNET HEART ===== */
+photos.forEach(p=>{
+  p.addEventListener("mouseenter",()=>{
+    for(let i=0;i<12;i++){
+      const h=document.createElement("div");
+      h.textContent="💖";
+      h.style.position="fixed";
+      h.style.left=p.getBoundingClientRect().left+40+"px";
+      h.style.top=p.getBoundingClientRect().top+40+"px";
+      h.style.animation="heartFly 2s ease-out forwards";
+      document.body.appendChild(h);
+      setTimeout(()=>h.remove(),2000);
+    }
+  });
+});
+
+/* ===== TIME FREEZE EFFECT ===== */
+addEventListener("dblclick",()=>{
+  document.body.classList.add("freeze");
+  spectrum();
+  setTimeout(()=>document.body.classList.remove("freeze"),800);
+});
+
+/* ===== NAME LETTER RISE ===== */
+function loveLetters(){
+  const text="ANH YÊU EM";
+  [...text].forEach((c,i)=>{
+    const l=document.createElement("div");
+    l.textContent=c;
+    l.style.position="fixed";
+    l.style.left=innerWidth/2+i*18-70+"px";
+    l.style.top=innerHeight+"px";
+    l.style.fontSize="22px";
+    l.style.color="#ffd1dc";
+    l.style.animation="heartFly 2.4s ease-out forwards";
+    document.body.appendChild(l);
+    setTimeout(()=>l.remove(),2400);
+  });
+}
+
+/* ===== TRIGGER ON FINAL ===== */
+const finalObserver=new MutationObserver(()=>{
+  if(finalText.classList.contains("show")){
+    spectrum();
+    loveLetters();
+  }
+});
+finalObserver.observe(finalText,{attributes:true});
+</script>
+
+<!-- ================= END OVERKILL MODE ================= -->
+-
